@@ -41,7 +41,14 @@ while True:
             last_event_id=last_event_id,
         )
 
+        print(events)
+
         for event in events["events"]:
+            last_event_id = max(
+                last_event_id,
+                event["id"]
+            )
+
             if event["type"] != "message":
                 continue
 
@@ -56,6 +63,9 @@ while True:
                 continue
 
             sender = msg["sender_full_name"]
+            sender_id = msg["sender_id"]
+            sender_url = f"{ZULIP_SITE}/#/user/{sender_id}"
+            avatar_url = msg.get("avatar_url")
             topic = msg["subject"]
 
             content = md(
@@ -93,6 +103,8 @@ while True:
                 "color": 0x4e5d94,
                 "author": {
                     "name": sender,
+                    "icon_url": avatar_url,
+                    "url": sender_url,
                 },
                 "fields": [
                     {
@@ -125,10 +137,6 @@ while True:
 
             print(f"Forwarded: {stream}/{topic}")
 
-            last_event_id = max(
-                last_event_id,
-                event["id"]
-            )
 
     except Exception as e:
         print("Error:", e)
