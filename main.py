@@ -41,8 +41,6 @@ while True:
             last_event_id=last_event_id,
         )
 
-        print(events)
-
         for event in events["events"]:
             last_event_id = max(
                 last_event_id,
@@ -80,8 +78,8 @@ while True:
             stream_id = msg["stream_id"]
             message_id = msg["id"]
 
-            encoded_stream = urllib.parse.quote(stream)
-            encoded_topic = urllib.parse.quote(topic)
+            encoded_stream = urllib.parse.quote(stream).replace(".", ".2E")
+            encoded_topic = urllib.parse.quote(topic).replace(".", ".2E")
 
             stream_url = (
                 f"{ZULIP_SITE}/#narrow/"
@@ -98,7 +96,7 @@ while True:
 
             embed = {
                 "title": f"{stream} / {topic}",
-                "url": message_url,
+                "url": message_url.replace("%", "."),
                 "description": content,
                 "color": 0x4e5d94,
                 "author": {
@@ -106,23 +104,7 @@ while True:
                     "icon_url": avatar_url,
                     "url": sender_url,
                 },
-                "fields": [
-                    {
-                        "name": "Stream",
-                        "value": f"[{stream}]({stream_url})",
-                        "inline": True,
-                    },
-                    {
-                        "name": "Topic",
-                        "value": f"[{topic}]({topic_url})",
-                        "inline": True,
-                    },
-                    {
-                        "name": "Message",
-                        "value": f"[Jump to message]({message_url})",
-                        "inline": False,
-                    },
-                ],
+                "fields": []
             }
 
             requests.post(
