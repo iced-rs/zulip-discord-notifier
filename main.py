@@ -67,13 +67,17 @@ while True:
             avatar_url = msg.get("avatar_url")
             topic = msg["subject"]
 
-            print(msg["content"])
-
             content = md(
                 msg["content"],
                 heading_style="ATX",
-                bullets="-",
+                code_language="rust",
+                code_language_callback=(lambda el:
+                    el.parent['data-code-language'].lower() if el.parent.has_attr('data-code-language') else None
+                )
             )
+
+            content = content.replace("\n>\n", "\n> \n")
+            content = content.replace("#narrow/channel", f"{ZULIP_SITE}/#narrow/channel")
 
             # Discord embed descriptions max out at 4096 chars
             content = content[:4000]
