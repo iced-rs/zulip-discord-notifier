@@ -26,7 +26,8 @@ client.add_subscriptions(
 )
 
 response = client.register(
-    event_types=["message"]
+    event_types=["message"],
+    apply_markdown=True,
 )
 
 queue_id = response["queue_id"]
@@ -65,6 +66,8 @@ while True:
             sender_url = f"{ZULIP_SITE}/#/user/{sender_id}"
             avatar_url = msg.get("avatar_url")
             topic = msg["subject"]
+
+            print(msg["content"])
 
             content = md(
                 msg["content"],
