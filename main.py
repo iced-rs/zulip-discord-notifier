@@ -63,7 +63,7 @@ while True:
 
             sender = msg["sender_full_name"]
             sender_id = msg["sender_id"]
-            sender_url = f"{ZULIP_SITE}/#/user/{sender_id}"
+            sender_url = f"{ZULIP_SITE}/#user/{sender_id}"
             avatar_url = msg.get("avatar_url")
             topic = msg["subject"]
 
