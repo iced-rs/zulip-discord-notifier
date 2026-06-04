@@ -6,14 +6,17 @@ import zulip
 
 from markdownify import markdownify as md
 
+DEFAULT_COLOR = 0x4e5d94
 DISCORD_WEBHOOK = os.environ["DISCORD_WEBHOOK"]
-
-STREAMS = os.environ.get(
-    "ZULIP_STREAMS",
-    "general"
-).split(",")
-
 ZULIP_SITE = os.environ["ZULIP_SITE"].rstrip("/")
+
+STREAMS = {}
+
+for entry in os.environ.get("ZULIP_STREAMS", "general").split(","):
+    parts = entry.strip().split(":", 1)
+    name = parts[0].strip()
+    color = int(parts[1].strip().lstrip("#"), 16) if len(parts) > 1 else DEFAULT_COLOR
+    STREAMS[name] = color
 
 client = zulip.Client(
     email=os.environ["ZULIP_EMAIL"],
@@ -22,7 +25,7 @@ client = zulip.Client(
 )
 
 client.add_subscriptions(
-    [{"name": s.strip()} for s in STREAMS]
+    [{"name": stream} for stream in STREAMS]
 )
 
 response = client.register(
@@ -105,7 +108,7 @@ while True:
                 "title": f"{stream} / {topic}",
                 "url": message_url.replace("%", "."),
                 "description": content,
-                "color": 0x4e5d94,
+                "color": STREAMS.get(stream, DEFAULT_COLOR),
                 "author": {
                     "name": sender,
                     "icon_url": avatar_url,
